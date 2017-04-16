@@ -169,7 +169,7 @@ canvas {
     max-width: 40em;
     display: flex;
     flex-wrap: wrap;
-    padding: 3em 0;
+    padding: 4em 0;
 }
 
 .preview.current {
