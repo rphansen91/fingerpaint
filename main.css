@@ -134,6 +134,7 @@ canvas {
     margin: auto;
     height: 5em;
     width: 5em;
+    overflow: visible;
 }
 
 #wheel.active {

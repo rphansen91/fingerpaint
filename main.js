@@ -1,6 +1,15 @@
 var PALLET = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4B0082', '#9400D3']
 
-window.onload = function () {   
+window.onload = function () {
+    var loader = Loader();
+    loader(true);
+    setTimeout(function() {
+        loader(false);
+        initialize();
+    }, 2000);
+}
+
+function initialize () {   
     var width = window.innerWidth;
     var height = window.innerHeight;
     var canvas = document.getElementById('canvas');
@@ -8,14 +17,12 @@ window.onload = function () {
     canvas.height = height;
     var context = canvas.getContext('2d');
 
-    var loader = Loader();
     var gallery = paintingGallery(document.getElementById('gallery'));
     var pallet = colorPallet(document.getElementById('pallet'));
     var radius = brushRadius(document.getElementById('radius'));
     var cursor = createCursor();
     var paint = brush(context);
     var lines = [{}];
-    // loader(true);
 
     gallery.selected(function (item) {
         canvas.width = item.width;
@@ -57,7 +64,6 @@ window.onload = function () {
     function draw (x) {
         context.clearRect(0,0,600,600);
         paint.lines(lines);
-        // loader(false);
     }
 }
 
