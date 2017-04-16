@@ -5,14 +5,14 @@ window.onload = initialize;
 function initialize () {   
     var width = window.innerWidth;
     var height = window.innerHeight;
-    var canvas = document.getElementById('canvas');
+    var canvas = find('#canvas');
     canvas.width = width;
     canvas.height = height;
     var context = canvas.getContext('2d');
 
-    var gallery = paintingGallery(document.getElementById('gallery'));
-    var pallet = colorPallet(document.getElementById('pallet'));
-    var radius = brushRadius(document.getElementById('radius'));
+    var gallery = paintingGallery(find('#gallery'));
+    var pallet = colorPallet(find('#pallet'));
+    var radius = brushRadius(find('#radius'));
     var cursor = createCursor();
     var paint = brush(context);
     var lines = [{}];
@@ -24,8 +24,8 @@ function initialize () {
         draw();
     })
 
-    document.getElementById('saved').addEventListener('click', showGallery)
-    document.getElementById('header').addEventListener('click', showGallery)
+    find('#saved').on('click', showGallery);
+    find('#header').on('click', showGallery);
 
     function showGallery () {
         gallery.show({
@@ -87,9 +87,9 @@ function brush (context) {
 }
 
 function trackMove (element, fn) {
-    element.addEventListener('mousemove', mousemove);
-    element.addEventListener('mouseleave', mouseleave);
-    element.addEventListener('touchmove', touchmove);
+    element.on('mousemove', mousemove);
+    element.on('mouseleave', mouseleave);
+    element.on('touchmove', touchmove);
 
     function mousemove (evt) {
         var x = evt.pageX - element.offsetLeft;
@@ -116,16 +116,16 @@ function trackMove (element, fn) {
 function trackDrag (element, fn) {
     var points = [];
 
-    element.addEventListener('mousedown', startDrag);
-    element.addEventListener('touchstart', startDrag);
+    element.on('mousedown', startDrag);
+    element.on('touchstart', startDrag);
 
     function startDrag (evt) {
         points = [];
-        element.addEventListener('mousemove', handleDrag);
-        element.addEventListener('touchmove', handleDrag);
-        element.addEventListener('mouseup', endDrag);
-        element.addEventListener('mouseleave', endDrag);
-        element.addEventListener('touchend', endDrag);
+        element.on('mousemove', handleDrag);
+        element.on('touchmove', handleDrag);
+        element.on('mouseup', endDrag);
+        element.on('mouseleave', endDrag);
+        element.on('touchend', endDrag);
     }
 
     function handleDrag (evt) {
@@ -158,10 +158,9 @@ function trackDrag (element, fn) {
 
 function colorPallet (element) {
     var color = PALLET[0];
-    var pickerModal = document.createElement('div');
-    var pickerContainer = document.createElement('div');
-    pickerModal.classList.add('dialog');
-    pickerContainer.classList.add('pickers');
+    var pickerModal = create('div', { class: 'dialog' });
+    var pickerContainer = create('div', { class: 'pickers' });
+    var pickerModalDisplay = active(pickerModal, 'active');
     pickerModal.innerHTML = '<h2>Select a color:</h2>'
     pickerModal.appendChild(pickerContainer);
 
@@ -170,8 +169,8 @@ function colorPallet (element) {
         return elem;
     });
     document.body.appendChild(pickerModal);
-    element.addEventListener('click', toggle);
-    pickerModal.addEventListener('click', close);
+    element.on('click', toggle);
+    pickerModal.on('click', close);
     setColor(color);
 
     function picker (c, i, arr) {
@@ -180,15 +179,14 @@ function colorPallet (element) {
         var radians = degrees * (Math.PI / 180);
         var x = (Math.cos(radians)*8.5).toFixed(2);
         var y = (Math.sin(radians)*8.5).toFixed(2);
-        var elem = document.createElement('div');
+        var elem = create('div', { class: 'picker' });
         elem.style['background-color'] = c;
         elem.destination = `translate3d(${x}em,${y}em,0)`;
-        elem.classList.add('picker');
-        elem.addEventListener('mouseenter', scale(1.4));
-        elem.addEventListener('touchstart', scale(1.4));
-        elem.addEventListener('mouseleave', scale(1));
-        elem.addEventListener('touchend', scale(1));
-        elem.addEventListener('click', function (evt) {
+        elem.on('mouseenter', scale(1.4));
+        elem.on('touchstart', scale(1.4));
+        elem.on('mouseleave', scale(1));
+        elem.on('touchend', scale(1));
+        elem.on('click', function (evt) {
             evt.stopPropagation();
             setColor(c);
             close();
@@ -213,21 +211,21 @@ function colorPallet (element) {
     }
 
     function open () {
-        pickerModal.classList.add('active');
+        pickerModalDisplay.on();
         pickerColors.map(function (picker) {
             picker.style['transform'] = picker.destination;
         })
     }
 
     function close () {
-        pickerModal.classList.remove('active');
+        pickerModalDisplay.off();
         pickerColors.map(function (picker) {
             picker.style['transform'] = '';
         })
     }
 
     function toggle () {
-        if (pickerModal.classList.contains('active')) {
+        if (pickerModalDisplay.isOn()) {
             close()
         } else {
             open()
@@ -247,12 +245,13 @@ function colorPallet (element) {
 
 function brushRadius (element) {
     var changedCb;
-    var rangeEl = document.createElement('input');
-    rangeEl.type = 'range';
-    rangeEl.defaultValue = 10;
-    rangeEl.min = 6;
-    rangeEl.max = 20;
-    rangeEl.addEventListener('change', onChange);
+    var rangeEl = create('input', {
+        type: 'range',
+        value: 10,
+        min: 6,
+        max: 20
+    });
+    rangeEl.on('change', onChange);
     element.appendChild(rangeEl);
     
     function onChange () {
@@ -271,8 +270,7 @@ function brushRadius (element) {
 }
 
 function createCursor () {
-    var element = document.createElement('div');
-    element.classList.add('cursor');
+    var element = create('div', { class: 'cursor' });
     document.body.appendChild(element);
 
     return {
@@ -293,15 +291,14 @@ function createCursor () {
 function paintingGallery (element) {
     var onSelected;
     var paintings = SafeStorage('paintings');
+    var galleryDisplay = active(element, 'active');
     
-    var closer = document.createElement('div');
-    closer.classList.add('gallery-closer');
-    closer.addEventListener('click', hide);
+    var closer = create('div', { class: 'gallery-closer' });
     closer.textContent = 'X';
+    closer.on('click', hide);
     element.appendChild(closer);
 
-    var container = document.createElement('div');
-    container.classList.add('gallery-container');
+    var container = create('div', { class: 'gallery-container' });
     element.appendChild(container);
 
     function show (inProgress) {
@@ -327,12 +324,12 @@ function paintingGallery (element) {
             return p;
         }).map(container.appendChild.bind(container));
         
-        element.classList.add('active');
+        galleryDisplay.on();
     }
 
     function hide () {
         container.innerHTML = '';
-        element.classList.remove('active');
+        galleryDisplay.off();
     }
 
     function selected (item) {
@@ -364,10 +361,9 @@ function Loader () {
 }
 
 function previewPainting (name, item) {
-    var preview = document.createElement('div');
-    preview.classList.add('preview');
+    var preview = create('div', { class: 'preview' });
 
-    var canvas = document.createElement('canvas');
+    var canvas = create('canvas');
     canvas.width = item.width;
     canvas.height = item.height;
     var context = canvas.getContext('2d');
