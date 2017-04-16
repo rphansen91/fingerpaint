@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>fingerpaint</title>
+        <link rel="icon" href="/favicon.ico">
+        <link rel="stylesheet" href="/main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <div class="toolbar">
+            <div id="saved" class="toolbar-item"></div>
+            <div id="header">fingerpaint</div>
+            <div id="radius" class="toolbar-item"></div>
+            <div id="pallet" class="toolbar-item"></div>
+        </div>
+        <div id="wheel" class="dialog">
+            <div class="picker" style="background-color: #ff0000"></div>
+            <div class="picker" style="background-color: #ff7f00"></div>
+            <div class="picker" style="background-color: #ffff00"></div>
+            <div class="picker" style="background-color: #00ff00"></div>
+            <div class="picker" style="background-color: #0000ff"></div>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div id="gallery" class="dialog"></div>
+
+        <script src="/save.js"></script>
+        <script src="/wheel.js"></script>
+        <script src="/main.js"></script>
+
+    </body>
+</html>
