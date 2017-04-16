@@ -24,13 +24,16 @@ window.onload = function () {
         draw();
     })
 
-    document.getElementById('saved').addEventListener('click', function () {
+    document.getElementById('saved').addEventListener('click', showGallery)
+    document.getElementById('header').addEventListener('click', showGallery)
+
+    function showGallery () {
         gallery.show({
             lines: lines,
             height: height,
             width: width
         });
-    })
+    }
 
     radius.onChange(pallet.setRadius);
 
@@ -304,14 +307,17 @@ function paintingGallery (element) {
 
     function show (inProgress) {
         var items = paintings.items();
-        var currPreview = previewPainting('Unsaved', inProgress);
-        currPreview.classList.add('current');
-        currPreview.addEventListener('click', function () {
-            var name = 'Painting: ' + (Object.keys(items).length + 1);
-            paintings.save(name, inProgress);
-            hide();
-        });
-        container.appendChild(currPreview);
+
+        if (inProgress.lines && inProgress.lines[0] && inProgress.lines[0].points) {
+            var currPreview = previewPainting('Unsaved', inProgress);
+            currPreview.classList.add('current');
+            currPreview.addEventListener('click', function () {
+                var name = 'Painting: ' + (Object.keys(items).length + 1);
+                paintings.save(name, inProgress);
+                hide();
+            });
+            container.appendChild(currPreview);
+        }
         
         Object.keys(items).map(function (name) {
             var p = previewPainting(name, items[name]);
