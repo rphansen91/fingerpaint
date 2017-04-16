@@ -14,6 +14,11 @@ var SafeStorage = (function (key) {
 
         return {
             items: all,
+            remove: function (name) {
+                var items = all();
+                items[name] = null;
+                save(items);
+            },
             save: function (name, item) {
                 var items = all();
                 items[name] = item;

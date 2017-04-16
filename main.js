@@ -316,11 +316,23 @@ function paintingGallery (element) {
             container.appendChild(currPreview);
         }
         
-        Object.keys(items).map(function (name) {
+        Object.keys(items)
+        .filter(function (i) { return !!items[i] })
+        .map(function (name) {
+            var rmEl = create('div', { class: 'gallery-closer' });
+            rmEl.style['z-index'] = 2;
+            rmEl.textContent = 'X';
+            rmEl.on('click', function (evt) {
+                evt.stopPropagation();
+                paintings.remove(name);
+                hide();
+                show(inProgress);
+            });
             var p = previewPainting(name, items[name]);
             p.addEventListener('click', function () {
                 selected(items[name]);
             });
+            p.appendChild(rmEl);
             return p;
         }).map(container.appendChild.bind(container));
         
