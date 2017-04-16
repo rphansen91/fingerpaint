@@ -307,6 +307,7 @@ function paintingGallery (element) {
 
     function show (inProgress) {
         var items = paintings.items();
+        console.log(inProgress, items);
 
         if (inProgress.lines && inProgress.lines[0] && inProgress.lines[0].points) {
             var currPreview = previewPainting('Unsaved', inProgress);
@@ -331,10 +332,8 @@ function paintingGallery (element) {
     }
 
     function hide () {
+        container.innerHTML = '';
         element.classList.remove('active');
-        setTimeout(function() {
-            container.innerHTML = '';
-        }, 1000);
     }
 
     function selected (item) {
