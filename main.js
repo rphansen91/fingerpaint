@@ -1,13 +1,6 @@
 var PALLET = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4B0082', '#9400D3']
 
-window.onload = function () {
-    var loader = Loader();
-    loader(true);
-    setTimeout(function() {
-        loader(false);
-        initialize();
-    }, 2000);
-}
+window.onload = initialize;
 
 function initialize () {   
     var width = window.innerWidth;
