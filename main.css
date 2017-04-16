@@ -44,7 +44,7 @@ canvas {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-    background-image: url(/fingerpaint.png);
+    background-image: url(https://rphansen91.github.io/fingerpaint/fingerpaint.png);
 }
 
 #pallet {
