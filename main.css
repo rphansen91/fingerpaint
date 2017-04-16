@@ -165,7 +165,7 @@ canvas {
     left: 0;
     right: 0;
     margin: auto;
-    width: 100%;
+    width: 90%;
     max-width: 40em;
     display: flex;
     flex-wrap: wrap;
