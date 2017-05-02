@@ -12,7 +12,7 @@ function create (tagName, options) {
 
     var element = document.createElement(tagName);
 
-    for (opt in options) {
+    for (var opt in options) {
         element.setAttribute(opt, options[opt]);
     }
 
@@ -31,4 +31,11 @@ function active (element, name) {
             element.classList.remove(name)
         }
     }
+}
+
+module.exports = {
+  domEl,
+  find,
+  create,
+  active
 }

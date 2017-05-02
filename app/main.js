@@ -1,8 +1,53 @@
-var PALLET = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4B0082', '#9400D3']
+import React from 'react'
+import { find, create, active } from './dom'
+import Toolbar from './toolbar'
+import Canvas from './canvas'
+import Wheel from './wheel'
+import SafeStorage from './save'
+import PALLET from './pallet'
 
-window.onload = initialize;
+export default class extends React.Component {
 
-function initialize () {   
+  constructor (props) {
+    super(props)
+    this.state = {
+      lines: [{}],
+      color: PALLET[0],
+      radius: 10
+    }
+  }
+
+  setColor (color) {
+    this.setState({ color })
+  }
+
+  setRadius (radius) {
+    this.setState({ radius })
+  }
+
+  handleDraw (action) {
+    this.props.dispatch(action)
+    this.setState({ lines: action.payload })
+  }
+
+  render () {
+    const { lines, color, radius } = this.state
+    return (
+      <div>
+        <Toolbar
+          setColor={this.setColor.bind(this)}
+          setRadius={this.setRadius.bind(this)} />
+        <Canvas
+          onDraw={this.handleDraw.bind(this)}
+          lines={lines}
+          color={color}
+          radius={radius} />
+      </div>
+    )
+  }
+}
+
+function initialize () {
     var width = window.innerWidth;
     var height = window.innerHeight;
     var canvas = find('#canvas');
@@ -50,109 +95,13 @@ function initialize () {
             color: pallet.value(),
             radius: radius.value()
         }
-        
+
         draw();
     })
 
     function draw (x) {
         context.clearRect(0,0,600,600);
         paint.lines(lines);
-    }
-}
-
-function brush (context) {
-    function circle (radius) {
-        return function (point) {
-            context.beginPath();
-            context.arc(point.x, point.y, radius, 0, Math.PI * 2);
-            context.fill();   
-        }
-    }
-
-    function lines (ls) {
-        ls.map(line);
-    }
-
-    function line (options) {
-        var radius = options.radius || 10;
-        if (options.color) context.fillStyle = options.color;
-        (options.points || []).map(circle(radius));
-    }
-
-    return {
-        circle: circle,
-        lines: lines,
-        line: line
-    }
-}
-
-function trackMove (element, fn) {
-    element.on('mousemove', mousemove);
-    element.on('mouseleave', mouseleave);
-    element.on('touchmove', touchmove);
-
-    function mousemove (evt) {
-        var x = evt.pageX - element.offsetLeft;
-        var y = evt.pageY - element.offsetTop;
-        fn({ x: x, y: y })
-    }
-
-    function touchmove (evt) {
-        evt.preventDefault();
-        mousemove(evt);
-    }
-
-    function mouseleave () {
-        fn()
-    }
-
-    return function () {
-        element.removeEventListener('mousemove', mousemove);
-        element.removeEventListener('mouseleave', mouseleave);
-        element.removeEventListener('touchmove', touchmove);
-    }
-}
-
-function trackDrag (element, fn) {
-    var points = [];
-
-    element.on('mousedown', startDrag);
-    element.on('touchstart', startDrag);
-
-    function startDrag (evt) {
-        points = [];
-        element.on('mousemove', handleDrag);
-        element.on('touchmove', handleDrag);
-        element.on('mouseup', endDrag);
-        element.on('mouseleave', endDrag);
-        element.on('touchend', endDrag);
-    }
-
-    function handleDrag (evt) {
-        addPoint(evt, true);
-    }
-
-    function endDrag (evt) {
-        element.removeEventListener('mousemove', handleDrag);
-        element.removeEventListener('touchmove', handleDrag);
-        element.removeEventListener('mouseup', endDrag);
-        element.removeEventListener('mouseleave', endDrag);
-        element.removeEventListener('touchend', endDrag);
-        addPoint(evt, false);
-    }
-
-    function addPoint (evt, dragging) {
-        var x = evt.pageX - element.offsetLeft;
-        var y = evt.pageY - element.offsetTop;
-        
-        points.push({ x: x, y: y });
-        
-        fn({ points: points, dragging: dragging });
-    }
-
-    return function () {
-        element.removeEventListener('mousedown', startDrag);
-        element.removeEventListener('touchstart', startDrag);
     }
 }
 
@@ -253,7 +202,7 @@ function brushRadius (element) {
     });
     rangeEl.on('change', onChange);
     element.appendChild(rangeEl);
-    
+
     function onChange () {
         changedCb && changedCb(rangeEl.value);
     }
@@ -269,30 +218,11 @@ function brushRadius (element) {
     }
 }
 
-function createCursor () {
-    var element = create('div', { class: 'cursor' });
-    document.body.appendChild(element);
-
-    return {
-        track: function (position, color, size) {
-            element.style['background-color'] = color;
-            element.style['width'] = (size * 2) + 'px';
-            element.style['height'] = (size * 2) + 'px';
-            element.style['left'] = (position.x - size) + 'px';
-            element.style['top'] = (position.y - size) + 'px';
-            element.style['visibility'] = 'visible';
-        },
-        hide: function () {
-            element.style['visibility'] = 'hidden';
-        }
-    }
-}
-
 function paintingGallery (element) {
     var onSelected;
     var paintings = SafeStorage('paintings');
     var galleryDisplay = active(element, 'active');
-    
+
     var closer = create('div', { class: 'gallery-closer' });
     closer.textContent = 'X';
     closer.on('click', hide);
@@ -315,7 +245,7 @@ function paintingGallery (element) {
             });
             container.appendChild(currPreview);
         }
-        
+
         Object.keys(items)
         .filter(function (i) { return !!items[i] })
         .map(function (name) {
@@ -335,7 +265,7 @@ function paintingGallery (element) {
             p.appendChild(rmEl);
             return p;
         }).map(container.appendChild.bind(container));
-        
+
         galleryDisplay.on();
     }
 
@@ -382,7 +312,7 @@ function previewPainting (name, item) {
 
     var paint = brush(context);
     paint.lines(item.lines);
-    
+
     preview.appendChild(canvas);
     return preview;
 }
